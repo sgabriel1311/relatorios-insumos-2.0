@@ -176,12 +176,8 @@
     const statusEl = document.getElementById("status");
     const container = document.getElementById("reports-container");
 
-    function formatarRelatorio(t) {
-      return t
-        .replace(/\r\n/g, "\n")
-        .replace(/\n{3,}/g, "\n\n")
-        .trim()
-        .toUpperCase();
+    function preservarQuebras(t) {
+      return t.replace(/\r\n/g, "\n").trim().toUpperCase();
     }
 
     btnGerar.addEventListener("click", async () => {
@@ -203,7 +199,7 @@
 
       btnGerar.disabled = true;
       statusEl.className = "status";
-      statusEl.textContent = `Redigindo ${insumos.length} relatório(s) em tempo real...`;
+      statusEl.textContent = `Redigindo ${insumos.length} relatório(s)...`;
       container.innerHTML = "";
 
       const boxes = insumos.map((insumo, index) => {
@@ -228,63 +224,4 @@
       try {
         const response = await fetch(WORKER_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ evolucao, insumos }),
-        });
-
-        if (!response.ok || !response.body) {
-          const errData = await response.json().catch(() => ({}));
-          throw new Error(errData.error || `Erro HTTP ${response.status}`);
-        }
-
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder();
-        let acumulado = "";
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          acumulado += decoder.decode(value, { stream: true });
-
-          const partes = acumulado.split("|||");
-          partes.forEach((parte, idx) => {
-            if (boxes[idx]) {
-              boxes[idx].textEl.textContent = formatarRelatorio(parte) || "REDIGINDO...";
-            }
-          });
-        }
-
-        const finais = acumulado.split("|||");
-        boxes.forEach((box, idx) => {
-          const finalTxt = formatarRelatorio(finais[idx] || "");
-          box.textEl.textContent = finalTxt || "NÃO GERADO.";
-          if (finalTxt) {
-            box.copyBtn.style.display = "inline-block";
-            box.copyBtn.addEventListener("click", () => {
-              navigator.clipboard.writeText(finalTxt);
-              box.copyBtn.textContent = "COPIADO!";
-              setTimeout(() => (box.copyBtn.textContent = "COPIAR RELATÓRIO"), 2000);
-            });
-          }
-        });
-
-        const segundos = ((performance.now() - t0) / 1000).toFixed(2);
-        statusEl.textContent = `Concluído em ${segundos}s!`;
-      } catch (err) {
-        statusEl.className = "status error";
-        statusEl.textContent = `Erro: ${err.message}`;
-      } finally {
-        btnGerar.disabled = false;
-      }
-    });
-
-    btnLimpar.addEventListener("click", () => {
-      document.getElementById("evolucao").value = "";
-      document.querySelectorAll("#insumos-grid input[type='checkbox']").forEach((cb) => (cb.checked = false));
-      container.innerHTML = "";
-      statusEl.className = "status";
-      statusEl.textContent = "Campos limpos.";
-    });
-  </script>
-</body>
-</html>
+          headers: { "Content-Type
