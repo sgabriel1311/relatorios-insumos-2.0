@@ -175,6 +175,10 @@
     const statusEl = document.getElementById("status");
     const container = document.getElementById("reports-container");
 
+    function limparTexto(t) {
+      return t.replace(/\r?\n|\r/g, " ").replace(/\s+/g, " ").trim().toUpperCase();
+    }
+
     btnGerar.addEventListener("click", async () => {
       const evolucao = document.getElementById("evolucao").value.trim();
       const insumos = Array.from(
@@ -194,10 +198,9 @@
 
       btnGerar.disabled = true;
       statusEl.className = "status";
-      statusEl.textContent = `Gerando ${insumos.length} relatório(s)...`;
+      statusEl.textContent = `Redigindo ${insumos.length} relatório(s) em tempo real...`;
       container.innerHTML = "";
 
-      // Cria imediatamente os boxes na tela para cada insumo assinalado
       const boxes = insumos.map((insumo, index) => {
         const card = document.createElement("div");
         card.className = "report-card";
@@ -206,7 +209,7 @@
             <span class="report-title">RELATÓRIO ${index + 1}: ${insumo}</span>
             <button type="button" class="copy-btn" style="display:none;">COPIAR RELATÓRIO</button>
           </div>
-          <div class="report-text">GERANDO RELATÓRIO PARA ${insumo}...</div>
+          <div class="report-text">AGUARDANDO INÍCIO...</div>
         `;
         container.appendChild(card);
         return {
@@ -216,47 +219,56 @@
       });
 
       const t0 = performance.now();
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 16000);
 
       try {
         const response = await fetch(WORKER_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          signal: controller.signal,
           body: JSON.stringify({ evolucao, insumos }),
         });
-        clearTimeout(timer);
 
-        const data = await response.json();
-
-        if (!response.ok) {
-          throw new Error(data.error || `Erro HTTP ${response.status}`);
+        if (!response.ok || !response.body) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `Erro HTTP ${response.status}`);
         }
 
-        const relatorios = data.relatorios || [];
-        relatorios.forEach((item, index) => {
-          if (boxes[index]) {
-            boxes[index].textEl.textContent = item.texto;
-            boxes[index].copyBtn.style.display = "inline-block";
-            boxes[index].copyBtn.addEventListener("click", () => {
-              navigator.clipboard.writeText(item.texto);
-              boxes[index].copyBtn.textContent = "COPIADO!";
-              setTimeout(() => (boxes[index].copyBtn.textContent = "COPIAR RELATÓRIO"), 2000);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let acumulado = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          acumulado += decoder.decode(value, { stream: true });
+
+          const partes = acumulado.split("|||");
+          partes.forEach((parte, idx) => {
+            if (boxes[idx]) {
+              boxes[idx].textEl.textContent = limparTexto(parte) || "REDIGINDO...";
+            }
+          });
+        }
+
+        // Finaliza e libera os botões de cópia
+        const finais = acumulado.split("|||");
+        boxes.forEach((box, idx) => {
+          const finalTxt = limparTexto(finais[idx] || "");
+          box.textEl.textContent = finalTxt || "NÃO GERADO.";
+          if (finalTxt) {
+            box.copyBtn.style.display = "inline-block";
+            box.copyBtn.addEventListener("click", () => {
+              navigator.clipboard.writeText(finalTxt);
+              box.copyBtn.textContent = "COPIADO!";
+              setTimeout(() => (box.copyBtn.textContent = "COPIAR RELATÓRIO"), 2000);
             });
           }
         });
 
         const segundos = ((performance.now() - t0) / 1000).toFixed(2);
-        statusEl.textContent = `Concluído em ${segundos}s! ${relatorios.length} relatório(s) gerado(s).`;
+        statusEl.textContent = `Concluído em ${segundos}s!`;
       } catch (err) {
-        clearTimeout(timer);
-        const msg = err.name === "AbortError"
-          ? "Tempo limite excedido (16s). Verifique se clicou em Deploy no Worker da Cloudflare."
-          : err.message;
         statusEl.className = "status error";
-        statusEl.textContent = `Erro: ${msg}`;
-        boxes.forEach(b => (b.textEl.textContent = `FALHA: ${msg}`));
+        statusEl.textContent = `Erro: ${err.message}`;
       } finally {
         btnGerar.disabled = false;
       }
