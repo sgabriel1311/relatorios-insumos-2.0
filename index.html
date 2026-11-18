@@ -209,7 +209,7 @@
             <span class="report-title">RELATÓRIO ${index + 1}: ${insumo}</span>
             <button type="button" class="copy-btn" style="display:none;">COPIAR RELATÓRIO</button>
           </div>
-          <div class="report-text">AGUARDANDO INÍCIO...</div>
+          <div class="report-text">REDIGINDO...</div>
         `;
         container.appendChild(card);
         return {
@@ -249,7 +249,6 @@
           });
         }
 
-        // Finaliza e libera os botões de cópia
         const finais = acumulado.split("|||");
         boxes.forEach((box, idx) => {
           const finalTxt = limparTexto(finais[idx] || "");
