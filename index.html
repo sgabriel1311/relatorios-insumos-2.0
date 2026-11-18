@@ -3,269 +3,167 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relatório de Insumos Individualizados - Goiânia / GO</title>
+  <title>Relatório de Insumos - Goiânia / GO</title>
   <style>
-    :root {
-      --bg: #0f172a;
-      --card: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --accent: #0ea5e9;
-      --accent-hover: #0284c7;
-      --success: #10b981;
-      --success-hover: #059669;
-      --danger: #ef4444;
-    }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      margin: 0;
-      padding: 20px;
-      display: flex;
-      justify-content: center;
-    }
-    .container { width: 100%; max-width: 900px; display: grid; gap: 18px; }
-    header { border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-    header h1 { font-size: 1.25rem; margin: 0; color: var(--accent); }
-    header p { font-size: 0.85rem; color: var(--muted); margin: 4px 0 0 0; }
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 18px;
-    }
-    .card h2 {
-      font-size: 0.95rem;
-      margin: 0 0 12px 0;
-      color: #e2e8f0;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
-    .insumos-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 10px;
-    }
-    .check-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      padding: 12px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 0.92rem;
-      font-weight: 500;
-    }
-    .check-item:hover { border-color: var(--accent); }
-    .check-item input[type="checkbox"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--accent);
-      cursor: pointer;
-    }
-    textarea {
-      background: #0f172a;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      padding: 12px;
-      font-size: 0.92rem;
-      width: 100%;
-      min-height: 150px;
-      resize: vertical;
-      line-height: 1.45;
-    }
-    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
-    button {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 20px;
-      font-weight: 600;
-      font-size: 0.92rem;
-      cursor: pointer;
-    }
-    button:hover { background: var(--accent-hover); }
-    button:disabled { opacity: 0.55; cursor: not-allowed; }
-    button.secondary { background: #334155; }
-    button.secondary:hover { background: #475569; }
-    .status {
-      font-size: 0.88rem;
-      color: var(--accent);
-      margin-top: 12px;
-      font-weight: 500;
-    }
-    .status.error { color: var(--danger); }
-    .reports-container { display: grid; gap: 16px; }
-    .report-card {
-      background: var(--card);
-      border: 1px solid var(--accent);
-      border-radius: 10px;
-      padding: 18px;
-    }
-    .report-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 10px;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .report-title {
-      font-size: 0.95rem;
-      font-weight: 700;
-      color: var(--accent);
-      text-transform: uppercase;
-    }
-    .copy-btn { background: var(--success); padding: 8px 14px; font-size: 0.85rem; }
-    .copy-btn:hover { background: var(--success-hover); }
-    .report-text {
-      background: #090d16;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 16px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.88rem;
-      line-height: 1.5;
-      color: #f1f5f9;
-      white-space: pre-wrap;
-      overflow-x: auto;
-    }
+    body { background: #0f172a; color: #f8fafc; margin: 0; padding: 20px; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 900px; display: grid; gap: 16px; }
+    header { border-bottom: 1px solid #334155; padding-bottom: 10px; }
+    header h1 { font-size: 1.2rem; margin: 0; color: #0ea5e9; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 16px; }
+    .card h2 { font-size: 0.9rem; margin: 0 0 10px 0; color: #e2e8f0; text-transform: uppercase; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+    .item { display: flex; align-items: center; gap: 10px; background: #0f172a; border: 1px solid #334155; padding: 12px; border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+    .item:hover { border-color: #0ea5e9; }
+    .item input { width: 18px; height: 18px; accent-color: #0ea5e9; }
+    textarea { background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; padding: 12px; font-size: 0.92rem; width: 100%; min-height: 140px; resize: vertical; }
+    .btns { display: flex; gap: 10px; margin-top: 12px; }
+    button { background: #0ea5e9; color: #fff; border: none; border-radius: 8px; padding: 12px 20px; font-weight: 700; cursor: pointer; }
+    button:hover { background: #0284c7; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    button.sec { background: #334155; }
+    .status { margin-top: 10px; font-size: 0.88rem; color: #38bdf8; font-weight: 600; }
+    .status.err { color: #f87171; }
+    .report-card { background: #1e293b; border: 1px solid #0ea5e9; border-radius: 10px; padding: 16px; margin-top: 14px; }
+    .report-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .report-title { font-weight: 700; color: #38bdf8; font-size: 0.92rem; }
+    .copy-btn { background: #10b981; padding: 8px 14px; font-size: 0.82rem; }
+    .report-body { background: #090d16; border: 1px solid #334155; border-radius: 8px; padding: 14px; font-family: monospace; font-size: 0.88rem; line-height: 1.5; white-space: pre-wrap; color: #f1f5f9; }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <h1>GERADOR DE RELATÓRIOS DE INSUMOS — GOIÂNIA / GO</h1>
-      <p>Gera 1 relatório médico individualizado com CID-10 para cada insumo assinalado.</p>
     </header>
 
     <div class="card">
-      <h2>1. Assinale os Insumos Necessários (Seleção Múltipla)</h2>
-      <div class="insumos-grid" id="insumos-grid">
-        <label class="check-item"><input type="checkbox" value="CADEIRA DE RODAS" /><span>Cadeira de Rodas</span></label>
-        <label class="check-item"><input type="checkbox" value="CADEIRA DE BANHO COM ASSENTO" /><span>Cadeira de Banho com Assento</span></label>
-        <label class="check-item"><input type="checkbox" value="COLCHÃO DE CAIXA DE OVO" /><span>Colchão de Caixa de Ovo</span></label>
-        <label class="check-item"><input type="checkbox" value="FRALDAS GERIÁTRICAS" /><span>Fraldas Geriátricas</span></label>
-        <label class="check-item"><input type="checkbox" value="CAMA HOSPITALAR" /><span>Cama Hospitalar</span></label>
+      <h2>1. Assinale os Insumos</h2>
+      <div class="grid" id="insumos-grid">
+        <label class="item"><input type="checkbox" value="CADEIRA DE RODAS" /><span>Cadeira de Rodas</span></label>
+        <label class="item"><input type="checkbox" value="CADEIRA DE BANHO COM ASSENTO" /><span>Cadeira de Banho com Assento</span></label>
+        <label class="item"><input type="checkbox" value="COLCHÃO DE CAIXA DE OVO" /><span>Colchão de Caixa de Ovo</span></label>
+        <label class="item"><input type="checkbox" value="FRALDAS GERIÁTRICAS" /><span>Fraldas Geriátricas</span></label>
+        <label class="item"><input type="checkbox" value="CAMA HOSPITALAR" /><span>Cama Hospitalar</span></label>
       </div>
     </div>
 
     <div class="card">
-      <h2>2. Evolução Clínica do Paciente</h2>
+      <h2>2. Evolução Clínica</h2>
       <textarea id="evolucao" placeholder="Cole aqui a evolução clínica do paciente..."></textarea>
-      <div class="btn-row">
+      <div class="btns">
         <button type="button" id="btn-gerar">GERAR RELATÓRIOS INDIVIDUAIS</button>
-        <button type="button" class="secondary" id="btn-limpar">LIMPAR</button>
+        <button type="button" class="sec" id="btn-limpar">LIMPAR</button>
       </div>
-      <div class="status" id="status">Selecione os insumos e cole a evolução para iniciar.</div>
+      <div class="status" id="status">Pronto para gerar.</div>
     </div>
 
-    <div class="reports-container" id="reports-container"></div>
+    <div id="resultados"></div>
   </div>
 
   <script>
-    const WORKER_URL = "https://relatorio-insumos.lgpsluizgabriel.workers.dev";
-    const btnGerar = document.getElementById("btn-gerar");
-    const btnLimpar = document.getElementById("btn-limpar");
-    const statusEl = document.getElementById("status");
-    const container = document.getElementById("reports-container");
+    window.onerror = function(msg) {
+      var st = document.getElementById("status");
+      if (st) { st.className = "status err"; st.textContent = "Erro de script: " + msg; }
+    };
 
-    function preservarQuebras(t) {
-      return t.replace(/\r\n/g, "\n").trim().toUpperCase();
-    }
+    var WORKER_URL = "https://relatorio-insumos.lgpsluizgabriel.workers.dev";
+    var btnGerar = document.getElementById("btn-gerar");
+    var btnLimpar = document.getElementById("btn-limpar");
+    var statusEl = document.getElementById("status");
+    var resultadosEl = document.getElementById("resultados");
 
-    btnGerar.addEventListener("click", async () => {
-      const evolucao = document.getElementById("evolucao").value.trim();
-      const insumos = Array.from(
-        document.querySelectorAll("#insumos-grid input[type='checkbox']:checked")
-      ).map((cb) => cb.value);
+    btnGerar.onclick = async function() {
+      var evolucao = document.getElementById("evolucao").value.trim();
+      var checks = document.querySelectorAll("#insumos-grid input:checked");
+      var insumos = [];
+      for (var i = 0; i < checks.length; i++) { insumos.push(checks[i].value); }
 
       if (insumos.length === 0) {
-        statusEl.className = "status error";
-        statusEl.textContent = "Assinale pelo menos um insumo antes de gerar.";
+        statusEl.className = "status err";
+        statusEl.textContent = "Assinale pelo menos um insumo.";
         return;
       }
       if (!evolucao) {
-        statusEl.className = "status error";
+        statusEl.className = "status err";
         statusEl.textContent = "Cole a evolução clínica do paciente.";
         return;
       }
 
       btnGerar.disabled = true;
       statusEl.className = "status";
-      statusEl.textContent = `Redigindo ${insumos.length} relatório(s)...`;
-      container.innerHTML = "";
+      statusEl.textContent = "Processando " + insumos.length + " relatório(s)...";
+      resultadosEl.innerHTML = "";
 
-      const boxes = insumos.map((insumo, index) => {
-        const card = document.createElement("div");
-        card.className = "report-card";
-        card.innerHTML = `
-          <div class="report-header">
-            <span class="report-title">RELATÓRIO ${index + 1}: ${insumo}</span>
-            <button type="button" class="copy-btn" style="display:none;">COPIAR RELATÓRIO</button>
-          </div>
-          <div class="report-text">REDIGINDO...</div>
-        `;
-        container.appendChild(card);
-        return {
-          textEl: card.querySelector(".report-text"),
-          copyBtn: card.querySelector(".copy-btn"),
-        };
-      });
-
-      const t0 = performance.now();
+      var t0 = performance.now();
 
       try {
-        const response = await fetch(WORKER_URL, {
+        var res = await fetch(WORKER_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ evolucao, insumos }),
+          body: JSON.stringify({ evolucao: evolucao, insumos: insumos })
         });
 
-        if (!response.ok) {
-          const errData = await response.json().catch(() => ({}));
-          throw new Error(errData.error || `Erro HTTP ${response.status}`);
+        var texto = await res.text();
+        if (!res.ok) {
+          throw new Error(texto || "Erro HTTP " + res.status);
         }
 
-        const textoBruto = await response.text();
-        const finais = textoBruto.split("|||");
+        var partes = texto.split("|||");
+        for (var j = 0; j < insumos.length; j++) {
+          var conteudo = (partes[j] || partes[0] || "").replace(/\r\n/g, "\n").trim().toUpperCase();
+          var card = document.createElement("div");
+          card.className = "report-card";
 
-        boxes.forEach((box, idx) => {
-          const finalTxt = preservarQuebras(finais[idx] || "");
-          box.textEl.textContent = finalTxt || "NÃO GERADO.";
-          if (finalTxt) {
-            box.copyBtn.style.display = "inline-block";
-            box.copyBtn.addEventListener("click", () => {
-              navigator.clipboard.writeText(finalTxt);
-              box.copyBtn.textContent = "COPIADO!";
-              setTimeout(() => (box.copyBtn.textContent = "COPIAR RELATÓRIO"), 2000);
-            });
-          }
-        });
+          var top = document.createElement("div");
+          top.className = "report-top";
 
-        const segundos = ((performance.now() - t0) / 1000).toFixed(2);
-        statusEl.textContent = `Concluído em ${segundos}s!`;
+          var title = document.createElement("span");
+          title.className = "report-title";
+          title.textContent = "RELATÓRIO " + (j + 1) + ": " + insumos[j];
+
+          var copyBtn = document.createElement("button");
+          copyBtn.type = "button";
+          copyBtn.className = "copy-btn";
+          copyBtn.textContent = "COPIAR RELATÓRIO";
+          (function(txt, btn) {
+            btn.onclick = function() {
+              navigator.clipboard.writeText(txt);
+              btn.textContent = "COPIADO!";
+              setTimeout(function() { btn.textContent = "COPIAR RELATÓRIO"; }, 2000);
+            };
+          })(conteudo, copyBtn);
+
+          top.appendChild(title);
+          top.appendChild(copyBtn);
+
+          var body = document.createElement("div");
+          body.className = "report-body";
+          body.textContent = conteudo;
+
+          card.appendChild(top);
+          card.appendChild(body);
+          resultadosEl.appendChild(card);
+        }
+
+        var seg = ((performance.now() - t0) / 1000).toFixed(2);
+        statusEl.textContent = "Concluído em " + seg + "s!";
       } catch (err) {
-        statusEl.className = "status error";
-        statusEl.textContent = `Erro: ${err.message}`;
+        statusEl.className = "status err";
+        statusEl.textContent = "Erro: " + err.message;
       } finally {
         btnGerar.disabled = false;
       }
-    });
+    };
 
-    btnLimpar.addEventListener("click", () => {
+    btnLimpar.onclick = function() {
       document.getElementById("evolucao").value = "";
-      document.querySelectorAll("#insumos-grid input[type='checkbox']").forEach((cb) => (cb.checked = false));
-      container.innerHTML = "";
+      var all = document.querySelectorAll("#insumos-grid input");
+      for (var i = 0; i < all.length; i++) { all[i].checked = false; }
+      resultadosEl.innerHTML = "";
       statusEl.className = "status";
       statusEl.textContent = "Campos limpos.";
-    });
+    };
   </script>
 </body>
 </html>
