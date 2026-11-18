@@ -128,12 +128,13 @@
       background: #090d16;
       border: 1px solid var(--border);
       border-radius: 8px;
-      padding: 14px;
+      padding: 16px;
       font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      font-size: 0.9rem;
-      line-height: 1.55;
+      font-size: 0.88rem;
+      line-height: 1.5;
       color: #f1f5f9;
       white-space: pre-wrap;
+      overflow-x: auto;
     }
   </style>
 </head>
@@ -175,8 +176,12 @@
     const statusEl = document.getElementById("status");
     const container = document.getElementById("reports-container");
 
-    function limparTexto(t) {
-      return t.replace(/\r?\n|\r/g, " ").replace(/\s+/g, " ").trim().toUpperCase();
+    function formatarRelatorio(t) {
+      return t
+        .replace(/\r\n/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim()
+        .toUpperCase();
     }
 
     btnGerar.addEventListener("click", async () => {
@@ -244,14 +249,14 @@
           const partes = acumulado.split("|||");
           partes.forEach((parte, idx) => {
             if (boxes[idx]) {
-              boxes[idx].textEl.textContent = limparTexto(parte) || "REDIGINDO...";
+              boxes[idx].textEl.textContent = formatarRelatorio(parte) || "REDIGINDO...";
             }
           });
         }
 
         const finais = acumulado.split("|||");
         boxes.forEach((box, idx) => {
-          const finalTxt = limparTexto(finais[idx] || "");
+          const finalTxt = formatarRelatorio(finais[idx] || "");
           box.textEl.textContent = finalTxt || "NÃO GERADO.";
           if (finalTxt) {
             box.copyBtn.style.display = "inline-block";
