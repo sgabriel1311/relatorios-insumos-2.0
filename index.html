@@ -15,6 +15,7 @@
       --accent-hover: #0284c7;
       --success: #10b981;
       --success-hover: #059669;
+      --danger: #ef4444;
     }
     * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
     body {
@@ -25,16 +26,8 @@
       display: flex;
       justify-content: center;
     }
-    .container {
-      width: 100%;
-      max-width: 900px;
-      display: grid;
-      gap: 18px;
-    }
-    header {
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 12px;
-    }
+    .container { width: 100%; max-width: 900px; display: grid; gap: 18px; }
+    header { border-bottom: 1px solid var(--border); padding-bottom: 12px; }
     header h1 { font-size: 1.25rem; margin: 0; color: var(--accent); }
     header p { font-size: 0.85rem; color: var(--muted); margin: 4px 0 0 0; }
     .card {
@@ -66,7 +59,6 @@
       cursor: pointer;
       font-size: 0.92rem;
       font-weight: 500;
-      transition: border-color 0.15s, background 0.15s;
     }
     .check-item:hover { border-color: var(--accent); }
     .check-item input[type="checkbox"] {
@@ -97,18 +89,19 @@
       font-weight: 600;
       font-size: 0.92rem;
       cursor: pointer;
-      transition: background 0.15s;
     }
     button:hover { background: var(--accent-hover); }
     button:disabled { opacity: 0.55; cursor: not-allowed; }
     button.secondary { background: #334155; }
     button.secondary:hover { background: #475569; }
-    .status { font-size: 0.85rem; color: var(--muted); margin-top: 10px; }
-
-    .reports-container {
-      display: grid;
-      gap: 16px;
+    .status {
+      font-size: 0.88rem;
+      color: var(--accent);
+      margin-top: 12px;
+      font-weight: 500;
     }
+    .status.error { color: var(--danger); }
+    .reports-container { display: grid; gap: 16px; }
     .report-card {
       background: var(--card);
       border: 1px solid var(--accent);
@@ -129,11 +122,7 @@
       color: var(--accent);
       text-transform: uppercase;
     }
-    .copy-btn {
-      background: var(--success);
-      padding: 8px 14px;
-      font-size: 0.85rem;
-    }
+    .copy-btn { background: var(--success); padding: 8px 14px; font-size: 0.85rem; }
     .copy-btn:hover { background: var(--success-hover); }
     .report-text {
       background: #090d16;
@@ -158,26 +147,11 @@
     <div class="card">
       <h2>1. Assinale os Insumos Necessários (Seleção Múltipla)</h2>
       <div class="insumos-grid" id="insumos-grid">
-        <label class="check-item">
-          <input type="checkbox" value="CADEIRA DE RODAS" />
-          <span>Cadeira de Rodas</span>
-        </label>
-        <label class="check-item">
-          <input type="checkbox" value="CADEIRA DE BANHO COM ASSENTO" />
-          <span>Cadeira de Banho com Assento</span>
-        </label>
-        <label class="check-item">
-          <input type="checkbox" value="COLCHÃO DE CAIXA DE OVO" />
-          <span>Colchão de Caixa de Ovo</span>
-        </label>
-        <label class="check-item">
-          <input type="checkbox" value="FRALDAS GERIÁTRICAS" />
-          <span>Fraldas Geriátricas</span>
-        </label>
-        <label class="check-item">
-          <input type="checkbox" value="CAMA HOSPITALAR" />
-          <span>Cama Hospitalar</span>
-        </label>
+        <label class="check-item"><input type="checkbox" value="CADEIRA DE RODAS" /><span>Cadeira de Rodas</span></label>
+        <label class="check-item"><input type="checkbox" value="CADEIRA DE BANHO COM ASSENTO" /><span>Cadeira de Banho com Assento</span></label>
+        <label class="check-item"><input type="checkbox" value="COLCHÃO DE CAIXA DE OVO" /><span>Colchão de Caixa de Ovo</span></label>
+        <label class="check-item"><input type="checkbox" value="FRALDAS GERIÁTRICAS" /><span>Fraldas Geriátricas</span></label>
+        <label class="check-item"><input type="checkbox" value="CAMA HOSPITALAR" /><span>Cama Hospitalar</span></label>
       </div>
     </div>
 
@@ -185,8 +159,8 @@
       <h2>2. Evolução Clínica do Paciente</h2>
       <textarea id="evolucao" placeholder="Cole aqui a evolução clínica do paciente..."></textarea>
       <div class="btn-row">
-        <button id="btn-gerar" onclick="gerarTodosRelatorios()">GERAR RELATÓRIOS INDIVIDUAIS</button>
-        <button class="secondary" onclick="limparTudo()">LIMPAR</button>
+        <button type="button" id="btn-gerar">GERAR RELATÓRIOS INDIVIDUAIS</button>
+        <button type="button" class="secondary" id="btn-limpar">LIMPAR</button>
       </div>
       <div class="status" id="status">Selecione os insumos e cole a evolução para iniciar.</div>
     </div>
@@ -196,5 +170,84 @@
 
   <script>
     const WORKER_URL = "https://relatorio-insumos.lgpsluizgabriel.workers.dev";
+    const btnGerar = document.getElementById("btn-gerar");
+    const btnLimpar = document.getElementById("btn-limpar");
+    const statusEl = document.getElementById("status");
+    const container = document.getElementById("reports-container");
 
-    async function gerarTodosRelatorios() {
+    btnGerar.addEventListener("click", async () => {
+      const evolucao = document.getElementById("evolucao").value.trim();
+      const insumos = Array.from(
+        document.querySelectorAll("#insumos-grid input[type='checkbox']:checked")
+      ).map((cb) => cb.value);
+
+      if (insumos.length === 0) {
+        statusEl.className = "status error";
+        statusEl.textContent = "Assinale pelo menos um insumo antes de gerar.";
+        return;
+      }
+      if (!evolucao) {
+        statusEl.className = "status error";
+        statusEl.textContent = "Cole a evolução clínica do paciente.";
+        return;
+      }
+
+      btnGerar.disabled = true;
+      statusEl.className = "status";
+      statusEl.textContent = `Processando ${insumos.length} relatório(s) em modo rápido...`;
+      container.innerHTML = "";
+      const t0 = performance.now();
+
+      try {
+        const response = await fetch(WORKER_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ evolucao, insumos }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || `Erro HTTP ${response.status}`);
+        }
+
+        const relatorios = data.relatorios || [];
+        relatorios.forEach((item, index) => {
+          const card = document.createElement("div");
+          card.className = "report-card";
+          card.innerHTML = `
+            <div class="report-header">
+              <span class="report-title">RELATÓRIO ${index + 1}: ${item.insumo}</span>
+              <button type="button" class="copy-btn">COPIAR RELATÓRIO</button>
+            </div>
+            <div class="report-text">${item.texto}</div>
+          `;
+          const copyBtn = card.querySelector(".copy-btn");
+          copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(item.texto);
+            copyBtn.textContent = "COPIADO!";
+            setTimeout(() => (copyBtn.textContent = "COPIAR RELATÓRIO"), 2000);
+          });
+          container.appendChild(card);
+        });
+
+        const segundos = ((performance.now() - t0) / 1000).toFixed(2);
+        statusEl.textContent = `Concluído em ${segundos}s! ${relatorios.length} relatório(s) gerado(s).`;
+      } catch (err) {
+        statusEl.className = "status error";
+        statusEl.textContent = `Erro: ${err.message}`;
+      } finally {
+        btnGerar.disabled = false;
+      }
+    });
+
+    btnLimpar.addEventListener("click", () => {
+      document.getElementById("evolucao").value = "";
+      document.querySelectorAll("#insumos-grid input[type='checkbox']").forEach((cb) => (cb.checked = false));
+      container.innerHTML = "";
+      statusEl.className = "status";
+      statusEl.textContent = "Campos limpos.";
+    });
+  </script>
+</body>
+</html>
