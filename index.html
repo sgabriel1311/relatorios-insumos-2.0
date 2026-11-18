@@ -194,16 +194,39 @@
 
       btnGerar.disabled = true;
       statusEl.className = "status";
-      statusEl.textContent = `Processando ${insumos.length} relatório(s) em modo rápido...`;
+      statusEl.textContent = `Gerando ${insumos.length} relatório(s)...`;
       container.innerHTML = "";
+
+      // Cria imediatamente os boxes na tela para cada insumo assinalado
+      const boxes = insumos.map((insumo, index) => {
+        const card = document.createElement("div");
+        card.className = "report-card";
+        card.innerHTML = `
+          <div class="report-header">
+            <span class="report-title">RELATÓRIO ${index + 1}: ${insumo}</span>
+            <button type="button" class="copy-btn" style="display:none;">COPIAR RELATÓRIO</button>
+          </div>
+          <div class="report-text">GERANDO RELATÓRIO PARA ${insumo}...</div>
+        `;
+        container.appendChild(card);
+        return {
+          textEl: card.querySelector(".report-text"),
+          copyBtn: card.querySelector(".copy-btn"),
+        };
+      });
+
       const t0 = performance.now();
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 16000);
 
       try {
         const response = await fetch(WORKER_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          signal: controller.signal,
           body: JSON.stringify({ evolucao, insumos }),
         });
+        clearTimeout(timer);
 
         const data = await response.json();
 
@@ -213,29 +236,27 @@
 
         const relatorios = data.relatorios || [];
         relatorios.forEach((item, index) => {
-          const card = document.createElement("div");
-          card.className = "report-card";
-          card.innerHTML = `
-            <div class="report-header">
-              <span class="report-title">RELATÓRIO ${index + 1}: ${item.insumo}</span>
-              <button type="button" class="copy-btn">COPIAR RELATÓRIO</button>
-            </div>
-            <div class="report-text">${item.texto}</div>
-          `;
-          const copyBtn = card.querySelector(".copy-btn");
-          copyBtn.addEventListener("click", () => {
-            navigator.clipboard.writeText(item.texto);
-            copyBtn.textContent = "COPIADO!";
-            setTimeout(() => (copyBtn.textContent = "COPIAR RELATÓRIO"), 2000);
-          });
-          container.appendChild(card);
+          if (boxes[index]) {
+            boxes[index].textEl.textContent = item.texto;
+            boxes[index].copyBtn.style.display = "inline-block";
+            boxes[index].copyBtn.addEventListener("click", () => {
+              navigator.clipboard.writeText(item.texto);
+              boxes[index].copyBtn.textContent = "COPIADO!";
+              setTimeout(() => (boxes[index].copyBtn.textContent = "COPIAR RELATÓRIO"), 2000);
+            });
+          }
         });
 
         const segundos = ((performance.now() - t0) / 1000).toFixed(2);
         statusEl.textContent = `Concluído em ${segundos}s! ${relatorios.length} relatório(s) gerado(s).`;
       } catch (err) {
+        clearTimeout(timer);
+        const msg = err.name === "AbortError"
+          ? "Tempo limite excedido (16s). Verifique se clicou em Deploy no Worker da Cloudflare."
+          : err.message;
         statusEl.className = "status error";
-        statusEl.textContent = `Erro: ${err.message}`;
+        statusEl.textContent = `Erro: ${msg}`;
+        boxes.forEach(b => (b.textEl.textContent = `FALHA: ${msg}`));
       } finally {
         btnGerar.disabled = false;
       }
