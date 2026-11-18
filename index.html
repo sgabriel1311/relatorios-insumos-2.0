@@ -224,4 +224,48 @@
       try {
         const response = await fetch(WORKER_URL, {
           method: "POST",
-          headers: { "Content-Type
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ evolucao, insumos }),
+        });
+
+        if (!response.ok) {
+          const errData = await response.json().catch(() => ({}));
+          throw new Error(errData.error || `Erro HTTP ${response.status}`);
+        }
+
+        const textoBruto = await response.text();
+        const finais = textoBruto.split("|||");
+
+        boxes.forEach((box, idx) => {
+          const finalTxt = preservarQuebras(finais[idx] || "");
+          box.textEl.textContent = finalTxt || "NÃO GERADO.";
+          if (finalTxt) {
+            box.copyBtn.style.display = "inline-block";
+            box.copyBtn.addEventListener("click", () => {
+              navigator.clipboard.writeText(finalTxt);
+              box.copyBtn.textContent = "COPIADO!";
+              setTimeout(() => (box.copyBtn.textContent = "COPIAR RELATÓRIO"), 2000);
+            });
+          }
+        });
+
+        const segundos = ((performance.now() - t0) / 1000).toFixed(2);
+        statusEl.textContent = `Concluído em ${segundos}s!`;
+      } catch (err) {
+        statusEl.className = "status error";
+        statusEl.textContent = `Erro: ${err.message}`;
+      } finally {
+        btnGerar.disabled = false;
+      }
+    });
+
+    btnLimpar.addEventListener("click", () => {
+      document.getElementById("evolucao").value = "";
+      document.querySelectorAll("#insumos-grid input[type='checkbox']").forEach((cb) => (cb.checked = false));
+      container.innerHTML = "";
+      statusEl.className = "status";
+      statusEl.textContent = "Campos limpos.";
+    });
+  </script>
+</body>
+</html>
