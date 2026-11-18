@@ -1,1 +1,200 @@
-<h1>Em construção</h1>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatório de Insumos Individualizados - Goiânia / GO</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --accent: #0ea5e9;
+      --accent-hover: #0284c7;
+      --success: #10b981;
+      --success-hover: #059669;
+    }
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, sans-serif; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 900px;
+      display: grid;
+      gap: 18px;
+    }
+    header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+    }
+    header h1 { font-size: 1.25rem; margin: 0; color: var(--accent); }
+    header p { font-size: 0.85rem; color: var(--muted); margin: 4px 0 0 0; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .card h2 {
+      font-size: 0.95rem;
+      margin: 0 0 12px 0;
+      color: #e2e8f0;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .insumos-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 10px;
+    }
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.92rem;
+      font-weight: 500;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .check-item:hover { border-color: var(--accent); }
+    .check-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    textarea {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      padding: 12px;
+      font-size: 0.92rem;
+      width: 100%;
+      min-height: 150px;
+      resize: vertical;
+      line-height: 1.45;
+    }
+    .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    button {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 20px;
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    button:hover { background: var(--accent-hover); }
+    button:disabled { opacity: 0.55; cursor: not-allowed; }
+    button.secondary { background: #334155; }
+    button.secondary:hover { background: #475569; }
+    .status { font-size: 0.85rem; color: var(--muted); margin-top: 10px; }
+
+    .reports-container {
+      display: grid;
+      gap: 16px;
+    }
+    .report-card {
+      background: var(--card);
+      border: 1px solid var(--accent);
+      border-radius: 10px;
+      padding: 18px;
+    }
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .report-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+    }
+    .copy-btn {
+      background: var(--success);
+      padding: 8px 14px;
+      font-size: 0.85rem;
+    }
+    .copy-btn:hover { background: var(--success-hover); }
+    .report-text {
+      background: #090d16;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: #f1f5f9;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>GERADOR DE RELATÓRIOS DE INSUMOS — GOIÂNIA / GO</h1>
+      <p>Gera 1 relatório médico individualizado com CID-10 para cada insumo assinalado.</p>
+    </header>
+
+    <div class="card">
+      <h2>1. Assinale os Insumos Necessários (Seleção Múltipla)</h2>
+      <div class="insumos-grid" id="insumos-grid">
+        <label class="check-item">
+          <input type="checkbox" value="CADEIRA DE RODAS" />
+          <span>Cadeira de Rodas</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" value="CADEIRA DE BANHO COM ASSENTO" />
+          <span>Cadeira de Banho com Assento</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" value="COLCHÃO DE CAIXA DE OVO" />
+          <span>Colchão de Caixa de Ovo</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" value="FRALDAS GERIÁTRICAS" />
+          <span>Fraldas Geriátricas</span>
+        </label>
+        <label class="check-item">
+          <input type="checkbox" value="CAMA HOSPITALAR" />
+          <span>Cama Hospitalar</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>2. Evolução Clínica do Paciente</h2>
+      <textarea id="evolucao" placeholder="Cole aqui a evolução clínica do paciente..."></textarea>
+      <div class="btn-row">
+        <button id="btn-gerar" onclick="gerarTodosRelatorios()">GERAR RELATÓRIOS INDIVIDUAIS</button>
+        <button class="secondary" onclick="limparTudo()">LIMPAR</button>
+      </div>
+      <div class="status" id="status">Selecione os insumos e cole a evolução para iniciar.</div>
+    </div>
+
+    <div class="reports-container" id="reports-container"></div>
+  </div>
+
+  <script>
+    const WORKER_URL = "https://relatorio-insumos.lgpsluizgabriel.workers.dev";
+
+    async function gerarTodosRelatorios() {
